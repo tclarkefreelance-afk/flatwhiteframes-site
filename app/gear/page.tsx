@@ -1,13 +1,16 @@
 import type { Metadata } from "next";
-import { getAllGear, Gear } from "@/lib/queries";
+import { getAllGear, getSiteSettings, type Gear } from "@/lib/queries";
 import GearCard from "@/components/GearCard";
 
 export const revalidate = 60;
 
-export const metadata: Metadata = {
-  title: "Gear Index",
-  description: "My full camera kit — bodies, lenses, and accessories — each with an honest review.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const s = await getSiteSettings();
+  return {
+    title: s.gearPageHeading,
+    description: s.gearPageDescription,
+  };
+}
 
 const CATEGORY_ORDER = ["camera", "lens", "accessory", "film", "bag"];
 const CATEGORY_LABELS: Record<string, string> = {
@@ -28,17 +31,21 @@ function groupByCategory(gear: Gear[]): Record<string, Gear[]> {
 }
 
 export default async function GearPage() {
-  const gear = await getAllGear();
+  const [gear, s] = await Promise.all([getAllGear(), getSiteSettings()]);
   const grouped = groupByCategory(gear);
   const categories = CATEGORY_ORDER.filter((c) => grouped[c]?.length);
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-16">
       <header className="mb-12 border-b border-roast-muted pb-10">
-        <p className="text-xs text-roast uppercase tracking-widest font-sans mb-4">
-          What&rsquo;s in the Bag
-        </p>
-        <h1 className="font-serif text-4xl sm:text-5xl text-espresso">Gear Index</h1>
+        {s.gearPageEyebrow && (
+          <p className="text-xs text-roast uppercase tracking-widest font-sans mb-4">
+            {s.gearPageEyebrow}
+          </p>
+        )}
+        <h1 className="font-serif text-4xl sm:text-5xl text-espresso">
+          {s.gearPageHeading}
+        </h1>
         <p className="mt-4 text-stone max-w-lg leading-relaxed">
           {gear.length} {gear.length === 1 ? "item" : "items"} — everything I shoot with,
           each with an honest write-up and sample photos.

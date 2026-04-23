@@ -3,6 +3,7 @@ import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { getSiteSettings } from "@/lib/queries";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -16,15 +17,20 @@ const playfair = Playfair_Display({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: { default: "Flat White Frames", template: "%s · Flat White Frames" },
-  description:
-    "A log of coffee shops visited and camera gear reviewed — by @flatwhiteframes.",
-  openGraph: {
-    siteName: "Flat White Frames",
-    type: "website",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const s = await getSiteSettings();
+  return {
+    title: {
+      default: s.siteTitle,
+      template: `%s · ${s.siteTitle}`,
+    },
+    description: s.siteDescription,
+    openGraph: {
+      siteName: s.siteTitle,
+      type: "website",
+    },
+  };
+}
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

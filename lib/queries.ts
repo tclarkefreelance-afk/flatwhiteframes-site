@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { client } from "./sanity.client";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -124,3 +125,69 @@ export async function getAllGearSlugs(): Promise<{ slug: string }[]> {
   );
   return results.map((r) => ({ slug: r.slug.current }));
 }
+
+// ─── Site Settings ────────────────────────────────────────────────────────────
+
+export type SiteSettings = {
+  siteTitle: string;
+  siteDescription?: string;
+  instagramHandle?: string;
+  // Navigation
+  navCoffeeLabel: string;
+  navGearLabel: string;
+  // Homepage
+  heroEyebrow?: string;
+  heroHeadline?: string;
+  heroAbout?: string;
+  heroCoffeeCtaLabel?: string;
+  heroInstagramCtaLabel?: string;
+  latestVisitsHeading?: string;
+  gearTeaserHeading?: string;
+  gearTeaserBody?: string;
+  gearTeaserCtaLabel?: string;
+  // Coffee page
+  coffeePageEyebrow?: string;
+  coffeePageHeading?: string;
+  coffeePageDescription?: string;
+  // Gear page
+  gearPageEyebrow?: string;
+  gearPageHeading?: string;
+  gearPageDescription?: string;
+  // Footer
+  footerTagline?: string;
+};
+
+const FALLBACK_SETTINGS: SiteSettings = {
+  siteTitle: "Flat White Frames",
+  siteDescription: "A log of coffee shops visited and camera gear reviewed.",
+  instagramHandle: "flatwhiteframes",
+  navCoffeeLabel: "Coffee Log",
+  navGearLabel: "Gear",
+  heroEyebrow: "Coffee & Cameras",
+  heroHeadline: "A log of great coffee and honest gear reviews.",
+  heroAbout: "I'm Taylor — I spend too much time in coffee shops and too much money on camera gear. This is where I write it all down.",
+  heroCoffeeCtaLabel: "Browse the Coffee Log",
+  heroInstagramCtaLabel: "@flatwhiteframes on Instagram",
+  latestVisitsHeading: "Latest Visits",
+  gearTeaserHeading: "What's in the Bag",
+  gearTeaserBody: "My full camera kit — bodies, lenses, and accessories — each with an honest write-up and sample shots from the field.",
+  gearTeaserCtaLabel: "See the Gear Index",
+  coffeePageEyebrow: "The Log",
+  coffeePageHeading: "Coffee Shop Log",
+  coffeePageDescription: "Every café I've visited — rated and reviewed.",
+  gearPageEyebrow: "What's in the Bag",
+  gearPageHeading: "Gear Index",
+  gearPageDescription: "My full camera kit — bodies, lenses, and accessories — each with an honest review.",
+  footerTagline: "Flat White Frames — coffee & cameras",
+};
+
+// cache() deduplicates this fetch — Header, Footer, and page components
+// all call getSiteSettings() but Sanity is only queried once per render pass.
+export const getSiteSettings = cache(async (): Promise<SiteSettings> => {
+  if (!client) return FALLBACK_SETTINGS;
+  const data = await client.fetch<Partial<SiteSettings> | null>(
+    `*[_type == "siteSettings" && _id == "siteSettings"][0]`
+  );
+  // Merge fetched values over fallbacks so missing fields always have a value
+  return { ...FALLBACK_SETTINGS, ...data };
+});

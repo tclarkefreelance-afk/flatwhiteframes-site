@@ -1,16 +1,20 @@
 import Link from "next/link";
+import { getSiteSettings } from "@/lib/queries";
 
-const nav = [
-  { href: "/coffee", label: "Coffee Log" },
-  { href: "/gear", label: "Gear" },
-];
+export default async function Header() {
+  const s = await getSiteSettings();
+  const igUrl = `https://instagram.com/${s.instagramHandle ?? "flatwhiteframes"}`;
 
-export default function Header() {
+  const nav = [
+    { href: "/coffee", label: s.navCoffeeLabel },
+    { href: "/gear", label: s.navGearLabel },
+  ];
+
   return (
     <header className="border-b border-roast-muted bg-cream sticky top-0 z-40">
       <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
         <Link href="/" className="font-serif text-xl text-espresso tracking-tight hover:text-roast transition-colors">
-          Flat White Frames
+          {s.siteTitle}
         </Link>
         <nav className="flex items-center gap-8">
           {nav.map((item) => (
@@ -23,7 +27,7 @@ export default function Header() {
             </Link>
           ))}
           <a
-            href="https://instagram.com/flatwhiteframes"
+            href={igUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="text-sm text-stone hover:text-roast transition-colors"

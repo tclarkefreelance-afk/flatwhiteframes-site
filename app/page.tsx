@@ -1,41 +1,47 @@
 import Link from "next/link";
-import { getLatestCafes } from "@/lib/queries";
+import { getLatestCafes, getSiteSettings } from "@/lib/queries";
 import CafeCard from "@/components/CafeCard";
 
 export const revalidate = 60;
 
 export default async function HomePage() {
-  const cafes = await getLatestCafes(3);
+  const [cafes, s] = await Promise.all([getLatestCafes(3), getSiteSettings()]);
+  const igUrl = `https://instagram.com/${s.instagramHandle ?? "flatwhiteframes"}`;
 
   return (
     <div className="max-w-5xl mx-auto px-6">
       {/* Hero */}
       <section className="py-24 border-b border-roast-muted">
-        <p className="text-xs text-roast uppercase tracking-widest font-sans mb-6">
-          Coffee &amp; Cameras
-        </p>
+        {s.heroEyebrow && (
+          <p className="text-xs text-roast uppercase tracking-widest font-sans mb-6">
+            {s.heroEyebrow}
+          </p>
+        )}
         <h1 className="font-serif text-5xl sm:text-6xl md:text-7xl text-espresso leading-tight max-w-2xl">
-          A log of great coffee and honest gear reviews.
+          {s.heroHeadline}
         </h1>
-        <p className="mt-6 text-stone text-lg max-w-xl leading-relaxed">
-          I&rsquo;m Taylor &mdash; I spend too much time in coffee shops and too much money
-          on camera gear. This is where I write it all down.
-        </p>
+        {s.heroAbout && (
+          <p className="mt-6 text-stone text-lg max-w-xl leading-relaxed">
+            {s.heroAbout}
+          </p>
+        )}
         <div className="mt-10 flex flex-wrap items-center gap-6">
           <Link
             href="/coffee"
             className="inline-block px-6 py-3 bg-espresso text-cream text-sm tracking-wide hover:bg-espresso-light transition-colors"
           >
-            Browse the Coffee Log
+            {s.heroCoffeeCtaLabel}
           </Link>
-          <a
-            href="https://instagram.com/flatwhiteframes"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sm text-stone hover:text-roast transition-colors"
-          >
-            @flatwhiteframes on Instagram
-          </a>
+          {s.heroInstagramCtaLabel && (
+            <a
+              href={igUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-stone hover:text-roast transition-colors"
+            >
+              {s.heroInstagramCtaLabel}
+            </a>
+          )}
         </div>
       </section>
 
@@ -43,7 +49,9 @@ export default async function HomePage() {
       {cafes.length > 0 && (
         <section className="py-16">
           <div className="flex items-baseline justify-between mb-8">
-            <h2 className="font-serif text-2xl text-espresso">Latest Visits</h2>
+            <h2 className="font-serif text-2xl text-espresso">
+              {s.latestVisitsHeading}
+            </h2>
             <Link href="/coffee" className="text-sm text-roast hover:text-espresso transition-colors">
               All cafés &rarr;
             </Link>
@@ -59,17 +67,22 @@ export default async function HomePage() {
       {/* Gear teaser */}
       <section className="py-16 border-t border-roast-muted">
         <div className="max-w-xl">
-          <h2 className="font-serif text-2xl text-espresso mb-4">What&rsquo;s in the Bag</h2>
-          <p className="text-stone leading-relaxed mb-6">
-            My full camera kit — bodies, lenses, and accessories — each with an honest
-            write-up and sample shots from the field.
-          </p>
-          <Link
-            href="/gear"
-            className="text-sm text-espresso border-b border-espresso pb-0.5 hover:text-roast hover:border-roast transition-colors"
-          >
-            See the Gear Index &rarr;
-          </Link>
+          {s.gearTeaserHeading && (
+            <h2 className="font-serif text-2xl text-espresso mb-4">
+              {s.gearTeaserHeading}
+            </h2>
+          )}
+          {s.gearTeaserBody && (
+            <p className="text-stone leading-relaxed mb-6">{s.gearTeaserBody}</p>
+          )}
+          {s.gearTeaserCtaLabel && (
+            <Link
+              href="/gear"
+              className="text-sm text-espresso border-b border-espresso pb-0.5 hover:text-roast hover:border-roast transition-colors"
+            >
+              {s.gearTeaserCtaLabel} &rarr;
+            </Link>
+          )}
         </div>
       </section>
     </div>
