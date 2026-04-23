@@ -4,7 +4,8 @@
       "Bash(npm install *)",
       "Bash(npm audit *)",
       "Bash(node -e \"console.log\\(require\\('./node_modules/next/package.json'\\).version\\)\")",
-      "Bash(npx tsc *)"
+      "Bash(npx tsc *)",
+      "Bash(npm run *)"
     ]
   }
 }

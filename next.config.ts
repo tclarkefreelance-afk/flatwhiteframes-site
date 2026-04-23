@@ -9,6 +9,8 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // Sanity Studio's dependencies (styled-components, @sanity/ui) need transpilation
+  transpilePackages: ["@sanity/ui", "sanity", "styled-components"],
 };
 
 export default nextConfig;

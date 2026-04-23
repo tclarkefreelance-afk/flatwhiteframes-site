@@ -58,12 +58,14 @@ const cafeFullFields = `
 `;
 
 export async function getAllCafes(): Promise<Cafe[]> {
+  if (!client) return [];
   return client.fetch(
     `*[_type == "cafe"] | order(visitDate desc) { ${cafeFields} }`
   );
 }
 
 export async function getLatestCafes(limit = 3): Promise<Cafe[]> {
+  if (!client) return [];
   return client.fetch(
     `*[_type == "cafe"] | order(visitDate desc) [0...$limit] { ${cafeFields} }`,
     { limit }
@@ -71,6 +73,7 @@ export async function getLatestCafes(limit = 3): Promise<Cafe[]> {
 }
 
 export async function getCafeBySlug(slug: string): Promise<Cafe | null> {
+  if (!client) return null;
   return client.fetch(
     `*[_type == "cafe" && slug.current == $slug][0] { ${cafeFullFields} }`,
     { slug }
@@ -78,6 +81,7 @@ export async function getCafeBySlug(slug: string): Promise<Cafe | null> {
 }
 
 export async function getAllCafeSlugs(): Promise<{ slug: string }[]> {
+  if (!client) return [];
   const results = await client.fetch<{ slug: { current: string } }[]>(
     `*[_type == "cafe"] { slug }`
   );
@@ -99,12 +103,14 @@ const gearFullFields = `
 `;
 
 export async function getAllGear(): Promise<Gear[]> {
+  if (!client) return [];
   return client.fetch(
     `*[_type == "gear"] | order(category asc, name asc) { ${gearFields} }`
   );
 }
 
 export async function getGearBySlug(slug: string): Promise<Gear | null> {
+  if (!client) return null;
   return client.fetch(
     `*[_type == "gear" && slug.current == $slug][0] { ${gearFullFields} }`,
     { slug }
@@ -112,6 +118,7 @@ export async function getGearBySlug(slug: string): Promise<Gear | null> {
 }
 
 export async function getAllGearSlugs(): Promise<{ slug: string }[]> {
+  if (!client) return [];
   const results = await client.fetch<{ slug: { current: string } }[]>(
     `*[_type == "gear"] { slug }`
   );
