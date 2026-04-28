@@ -45,9 +45,13 @@ export default async function GearPage() {
         <h1 className="font-serif text-4xl sm:text-5xl text-espresso">
           {s.gearPageHeading}
         </h1>
-        <p className="mt-4 text-stone max-w-lg leading-relaxed">
-          {gear.length} {gear.length === 1 ? "item" : "items"} — everything I shoot with,
-          each with an honest write-up and sample photos.
+        {s.gearPageAbout && (
+          <p className="mt-4 text-stone max-w-lg leading-relaxed">
+            {s.gearPageAbout}
+          </p>
+        )}
+        <p className="mt-4 text-stone-light text-sm">
+          {gear.length} {gear.length === 1 ? "item" : "items"}
         </p>
       </header>
 

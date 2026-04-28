@@ -152,6 +152,7 @@ export type SiteSettings = {
   // Gear page
   gearPageEyebrow?: string;
   gearPageHeading?: string;
+  gearPageAbout?: string;
   gearPageDescription?: string;
   // Footer
   footerTagline?: string;
@@ -177,6 +178,7 @@ const FALLBACK_SETTINGS: SiteSettings = {
   coffeePageDescription: "Every café I've visited — rated and reviewed.",
   gearPageEyebrow: "What's in the Bag",
   gearPageHeading: "Gear Index",
+  gearPageAbout: "",
   gearPageDescription: "My full camera kit — bodies, lenses, and accessories — each with an honest review.",
   footerTagline: "Flat White Frames — coffee & cameras",
 };

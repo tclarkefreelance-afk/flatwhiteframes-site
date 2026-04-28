@@ -163,11 +163,20 @@ export const siteSettingsSchema = defineType({
       initialValue: "Gear Index",
     }),
     defineField({
+      name: "gearPageAbout",
+      title: "About Text",
+      type: "text",
+      rows: 3,
+      group: "gearPage",
+      description: "Intro paragraph shown below the page heading.",
+    }),
+    defineField({
       name: "gearPageDescription",
       title: "Meta Description",
       type: "text",
       rows: 2,
       group: "gearPage",
+      description: "Used by search engines and social share cards — not shown on the page.",
     }),
 
     // ── Footer ─────────────────────────────────────────────────────────────
