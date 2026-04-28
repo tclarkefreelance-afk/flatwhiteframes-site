@@ -187,9 +187,21 @@ const FALLBACK_SETTINGS: SiteSettings = {
 // all call getSiteSettings() but Sanity is only queried once per render pass.
 export const getSiteSettings = cache(async (): Promise<SiteSettings> => {
   if (!client) return FALLBACK_SETTINGS;
+
   const data = await client.fetch<Partial<SiteSettings> | null>(
-    `*[_type == "siteSettings" && _id == "siteSettings"][0]`
+    `*[_type == "siteSettings" && _id == "siteSettings"][0]`,
+    {}, // no params
+    { next: { revalidate: 60 } } // align with page-level ISR revalidation
   );
-  // Merge fetched values over fallbacks so missing fields always have a value
-  return { ...FALLBACK_SETTINGS, ...data };
+
+  if (!data) return FALLBACK_SETTINGS;
+
+  // Only let Sanity values override fallbacks when they are actually set.
+  // Spreading `data` directly would replace fallback strings with `null` for
+  // any field the user left empty in the Studio, hiding them on the page.
+  const nonEmpty = Object.fromEntries(
+    Object.entries(data).filter(([, v]) => v !== null && v !== undefined && v !== "")
+  );
+
+  return { ...FALLBACK_SETTINGS, ...nonEmpty };
 });
