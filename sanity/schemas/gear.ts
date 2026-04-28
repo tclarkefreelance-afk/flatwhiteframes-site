@@ -29,6 +29,7 @@ export const gearSchema = defineType({
           { title: "Accessory", value: "accessory" },
           { title: "Film", value: "film" },
           { title: "Bag", value: "bag" },
+          { title: "Tech", value: "tech" },
         ],
         layout: "radio",
       },
