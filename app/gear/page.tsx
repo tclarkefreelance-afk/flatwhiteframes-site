@@ -12,13 +12,12 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-const CATEGORY_ORDER = ["camera", "lens", "accessory", "film", "bag"];
+const CATEGORY_ORDER = ["camera-gear", "tech", "accessories", "misc"];
 const CATEGORY_LABELS: Record<string, string> = {
-  camera: "Camera Bodies",
-  lens: "Lenses",
-  accessory: "Accessories",
-  film: "Film",
-  bag: "Bags",
+  "camera-gear": "Camera Gear",
+  tech: "Tech",
+  accessories: "Accessories",
+  misc: "Misc",
 };
 
 function groupByCategory(gear: Gear[]): Record<string, Gear[]> {

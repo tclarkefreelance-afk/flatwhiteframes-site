@@ -5,11 +5,10 @@ import { urlFor } from "@/lib/sanity.image";
 import StarRating from "./StarRating";
 
 const CATEGORY_LABELS: Record<string, string> = {
-  camera: "Camera Body",
-  lens: "Lens",
-  accessory: "Accessory",
-  film: "Film",
-  bag: "Bag",
+  "camera-gear": "Camera Gear",
+  tech: "Tech",
+  accessories: "Accessories",
+  misc: "Misc",
 };
 
 export default function GearCard({ gear }: { gear: Gear }) {

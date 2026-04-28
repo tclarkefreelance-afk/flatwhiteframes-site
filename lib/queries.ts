@@ -33,7 +33,7 @@ export type Gear = {
   _createdAt: string;
   name: string;
   slug: { current: string };
-  category: "camera" | "lens" | "accessory" | "film" | "bag";
+  category: "camera-gear" | "tech" | "accessories" | "misc";
   shortReview: string;
   body?: unknown[];
   samplePhoto?: SanityImage;
