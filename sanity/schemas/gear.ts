@@ -24,12 +24,10 @@ export const gearSchema = defineType({
       type: "string",
       options: {
         list: [
-          { title: "Camera Body", value: "camera" },
-          { title: "Lens", value: "lens" },
-          { title: "Accessory", value: "accessory" },
-          { title: "Film", value: "film" },
-          { title: "Bag", value: "bag" },
+          { title: "Camera Gear", value: "camera-gear" },
           { title: "Tech", value: "tech" },
+          { title: "Accessories", value: "accessories" },
+          { title: "Misc", value: "misc" },
         ],
         layout: "radio",
       },
