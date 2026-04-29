@@ -17,6 +17,8 @@ export type Cafe = {
   slug: { current: string };
   city: string;
   country?: string;
+  latitude?: number;
+  longitude?: number;
   visitDate?: string;
   rating: number;
   shortNotes: string;
@@ -47,6 +49,7 @@ export type Gear = {
 
 const cafeFields = `
   _id, _createdAt, name, slug, city, country,
+  latitude, longitude,
   visitDate, rating, shortNotes, tags,
   coverImage { asset, alt, hotspot }
 `;

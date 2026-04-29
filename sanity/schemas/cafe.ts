@@ -30,6 +30,20 @@ export const cafeSchema = defineType({
       type: "string",
     }),
     defineField({
+      name: "latitude",
+      title: "Latitude",
+      type: "number",
+      description: "Decimal degrees — e.g. -33.8688 for Sydney. Used to place the café on the map.",
+      validation: (Rule) => Rule.min(-90).max(90),
+    }),
+    defineField({
+      name: "longitude",
+      title: "Longitude",
+      type: "number",
+      description: "Decimal degrees — e.g. 151.2093 for Sydney.",
+      validation: (Rule) => Rule.min(-180).max(180),
+    }),
+    defineField({
       name: "visitDate",
       title: "Visit Date",
       type: "date",
