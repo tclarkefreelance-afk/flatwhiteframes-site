@@ -84,12 +84,12 @@ export async function getCafeBySlug(slug: string): Promise<Cafe | null> {
   );
 }
 
-export async function getAllCafeSlugs(): Promise<{ slug: string }[]> {
+export async function getAllCafeSlugs(): Promise<{ slug: string; updatedAt: string }[]> {
   if (!client) return [];
-  const results = await client.fetch<{ slug: { current: string } }[]>(
-    `*[_type == "cafe"] { slug }`
+  const results = await client.fetch<{ slug: { current: string }; _updatedAt: string }[]>(
+    `*[_type == "cafe"] { slug, _updatedAt }`
   );
-  return results.map((r) => ({ slug: r.slug.current }));
+  return results.map((r) => ({ slug: r.slug.current, updatedAt: r._updatedAt }));
 }
 
 // ─── Gear queries ─────────────────────────────────────────────────────────────
@@ -121,12 +121,12 @@ export async function getGearBySlug(slug: string): Promise<Gear | null> {
   );
 }
 
-export async function getAllGearSlugs(): Promise<{ slug: string }[]> {
+export async function getAllGearSlugs(): Promise<{ slug: string; updatedAt: string }[]> {
   if (!client) return [];
-  const results = await client.fetch<{ slug: { current: string } }[]>(
-    `*[_type == "gear"] { slug }`
+  const results = await client.fetch<{ slug: { current: string }; _updatedAt: string }[]>(
+    `*[_type == "gear"] { slug, _updatedAt }`
   );
-  return results.map((r) => ({ slug: r.slug.current }));
+  return results.map((r) => ({ slug: r.slug.current, updatedAt: r._updatedAt }));
 }
 
 // ─── Site Settings ────────────────────────────────────────────────────────────
