@@ -1,35 +1,46 @@
 import type { MetadataRoute } from "next";
 import { getAllCafeSlugs, getAllGearSlugs } from "@/lib/queries";
 
-// Served automatically at /sitemap.xml by Next.js — no route handler needed.
+// Revalidate every hour so new cafés and gear added in Sanity appear in the
+// sitemap without needing a full redeploy. Without this the route is frozen
+// as fully static (○) at build time and never picks up new content.
+export const revalidate = 3600;
 
-const BASE_URL = (
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://flatwhiteframes.com"
-).replace(/\/$/, ""); // strip any accidental trailing slash
+// BASE_URL must live inside the function (not at module scope) so it is
+// evaluated at request time — module-level NEXT_PUBLIC_ vars are inlined at
+// build time and may resolve to "" on platforms where the env var is absent
+// during the build phase.
+function getBaseUrl(): string {
+  return (process.env.NEXT_PUBLIC_SITE_URL ?? "https://flatwhiteframes.com")
+    .replace(/\/$/, "");
+}
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const BASE_URL = getBaseUrl();
+
   const [cafeSlugs, gearSlugs] = await Promise.all([
     getAllCafeSlugs(),
     getAllGearSlugs(),
   ]);
 
   // ── Static routes ──────────────────────────────────────────────────────────
+  const now = new Date();
   const staticRoutes: MetadataRoute.Sitemap = [
     {
       url: BASE_URL,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: "daily",
       priority: 1.0,
     },
     {
       url: `${BASE_URL}/coffee`,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: "weekly",
       priority: 0.9,
     },
     {
       url: `${BASE_URL}/gear`,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: "monthly",
       priority: 0.9,
     },
