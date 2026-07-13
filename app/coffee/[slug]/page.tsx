@@ -3,10 +3,10 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { PortableText } from "@portabletext/react";
-import { getCafeBySlug, getAllCafeSlugs, blocksToPlainText } from "@/lib/queries";
+import { getCafeBySlug, getAllCafeSlugs } from "@/lib/queries";
 import { urlFor } from "@/lib/sanity.image";
 import StarRating from "@/components/StarRating";
-import { portableTextComponents, ledeComponents } from "@/components/PortableTextComponents";
+import { portableTextComponents } from "@/components/PortableTextComponents";
 
 export const revalidate = 60;
 
@@ -22,17 +22,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const cafe = await getCafeBySlug(slug);
   if (!cafe) return {};
 
-  const notes = cafe.shortNotes;
-  const description =
-    typeof notes === "string"
-      ? notes
-      : Array.isArray(notes)
-      ? blocksToPlainText(notes)
-      : undefined;
-
   return {
     title: cafe.name,
-    description,
+    description: cafe.shortNotes,
     openGraph: cafe.coverImage
       ? { images: [{ url: urlFor(cafe.coverImage).width(1200).height(630).url() }] }
       : undefined,
@@ -108,13 +100,7 @@ export default async function CafeDetailPage({ params }: Props) {
           </div>
         )}
 
-        <div className="mt-5 max-w-2xl">
-          {typeof cafe.shortNotes === "string" ? (
-            <p className="text-stone text-lg leading-relaxed">{cafe.shortNotes}</p>
-          ) : (
-            <PortableText value={cafe.shortNotes as Parameters<typeof PortableText>[0]["value"]} components={ledeComponents} />
-          )}
-        </div>
+        <p className="mt-5 text-stone text-lg leading-relaxed max-w-2xl">{cafe.shortNotes}</p>
 
         <div className="flex flex-wrap gap-4 mt-5">
           {cafe.website && (

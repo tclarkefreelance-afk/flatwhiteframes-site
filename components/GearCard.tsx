@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Gear, blocksToPlainText } from "@/lib/queries";
+import { Gear } from "@/lib/queries";
 import { urlFor } from "@/lib/sanity.image";
 import StarRating from "./StarRating";
 
@@ -55,7 +55,7 @@ export default function GearCard({ gear }: { gear: Gear }) {
         </div>
 
         <p className="text-stone text-sm leading-relaxed line-clamp-2 flex-1">
-          {blocksToPlainText(gear.shortReview)}
+          {gear.shortReview}
         </p>
 
         {gear.stillOwn === false && (

@@ -3,10 +3,10 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { PortableText } from "@portabletext/react";
-import { getGearBySlug, getAllGearSlugs, blocksToPlainText } from "@/lib/queries";
+import { getGearBySlug, getAllGearSlugs } from "@/lib/queries";
 import { urlFor } from "@/lib/sanity.image";
 import StarRating from "@/components/StarRating";
-import { portableTextComponents, ledeComponents } from "@/components/PortableTextComponents";
+import { portableTextComponents } from "@/components/PortableTextComponents";
 
 export const revalidate = 60;
 
@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!gear) return {};
   return {
     title: gear.name,
-    description: blocksToPlainText(gear.shortReview),
+    description: gear.shortReview,
     openGraph: gear.samplePhoto
       ? { images: [{ url: urlFor(gear.samplePhoto).width(1200).height(630).url() }] }
       : undefined,
@@ -92,13 +92,7 @@ export default async function GearDetailPage({ params }: Props) {
             </div>
           )}
 
-          <div>
-            {typeof gear.shortReview === "string" ? (
-              <p className="text-stone text-lg leading-relaxed">{gear.shortReview}</p>
-            ) : (
-              <PortableText value={gear.shortReview as Parameters<typeof PortableText>[0]["value"]} components={ledeComponents} />
-            )}
-          </div>
+          <p className="text-stone text-lg leading-relaxed">{gear.shortReview}</p>
 
           {gear.stillOwn === false && (
             <p className="text-stone-light text-sm italic border-l-2 border-roast-muted pl-3">

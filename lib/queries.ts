@@ -1,24 +1,6 @@
 import { cache } from "react";
 import { client } from "./sanity.client";
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
-type PtBlock = { _type: string; children?: { text?: string }[] };
-
-/** Extracts a plain string from a portable text value.
- *  Handles legacy plain-text strings (existing Sanity documents) and modern
- *  block arrays transparently so old content never causes a runtime error. */
-export function blocksToPlainText(value: unknown): string {
-  if (!value) return "";
-  if (typeof value === "string") return value;
-  if (!Array.isArray(value)) return "";
-  return (value as PtBlock[])
-    .filter((b) => b && b._type === "block")
-    .map((b) => b.children?.map((c) => c.text ?? "").join("") ?? "")
-    .join(" ")
-    .trim();
-}
-
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 export type SanityImage = {
@@ -39,7 +21,7 @@ export type Cafe = {
   longitude?: number;
   visitDate?: string;
   rating: number;
-  shortNotes: unknown[] | string;
+  shortNotes: string;
   body?: unknown[];
   coverImage?: SanityImage;
   photos?: SanityImage[];
@@ -54,7 +36,7 @@ export type Gear = {
   name: string;
   slug: { current: string };
   category: "camera-gear" | "tech" | "accessories" | "misc";
-  shortReview: unknown[] | string;
+  shortReview: string;
   body?: unknown[];
   samplePhoto?: SanityImage;
   rating?: number;
