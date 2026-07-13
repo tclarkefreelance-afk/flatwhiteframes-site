@@ -8,6 +8,7 @@ export default async function Header() {
   const nav = [
     { href: "/coffee", label: s.navCoffeeLabel },
     { href: "/gear", label: s.navGearLabel },
+    { href: "/prints", label: s.navPrintsLabel },
   ];
 
   return (

@@ -30,6 +30,9 @@ export default defineConfig({
             S.listItem()
               .title("Gear")
               .child(S.documentTypeList("gear").title("Gear")),
+            S.listItem()
+              .title("Prints")
+              .child(S.documentTypeList("print").title("Prints")),
           ]),
     }),
   ],

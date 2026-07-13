@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { getAllCafeSlugs, getAllGearSlugs } from "@/lib/queries";
+import { getAllCafeSlugs, getAllGearSlugs, getAllPrintSlugs } from "@/lib/queries";
 
 // Revalidate every hour so new cafés and gear added in Sanity appear in the
 // sitemap without needing a full redeploy. Without this the route is frozen
@@ -18,9 +18,10 @@ function getBaseUrl(): string {
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const BASE_URL = getBaseUrl();
 
-  const [cafeSlugs, gearSlugs] = await Promise.all([
+  const [cafeSlugs, gearSlugs, printSlugs] = await Promise.all([
     getAllCafeSlugs(),
     getAllGearSlugs(),
+    getAllPrintSlugs(),
   ]);
 
   // ── Static routes ──────────────────────────────────────────────────────────
@@ -44,6 +45,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.9,
     },
+    {
+      url: `${BASE_URL}/prints`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.8,
+    },
   ];
 
   // ── Dynamic café pages ─────────────────────────────────────────────────────
@@ -62,5 +69,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }));
 
-  return [...staticRoutes, ...cafeRoutes, ...gearRoutes];
+  // ── Dynamic print pages ────────────────────────────────────────────────────
+  const printRoutes: MetadataRoute.Sitemap = printSlugs.map(({ slug, updatedAt }) => ({
+    url: `${BASE_URL}/prints/${slug}`,
+    lastModified: new Date(updatedAt),
+    changeFrequency: "monthly",
+    priority: 0.7,
+  }));
+
+  return [...staticRoutes, ...cafeRoutes, ...gearRoutes, ...printRoutes];
 }

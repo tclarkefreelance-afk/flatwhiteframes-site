@@ -129,6 +129,49 @@ export async function getAllGearSlugs(): Promise<{ slug: string; updatedAt: stri
   return results.map((r) => ({ slug: r.slug.current, updatedAt: r._updatedAt }));
 }
 
+// ─── Print queries ────────────────────────────────────────────────────────────
+
+export type Print = {
+  _id: string;
+  name: string;
+  slug: { current: string };
+  image?: SanityImage;
+  description?: string;
+  available?: boolean;
+  order?: number;
+};
+
+const printFields = `
+  _id, name, slug, description, available, order,
+  image { asset, alt, hotspot }
+`;
+
+export async function getAllPrints(): Promise<Print[]> {
+  if (!client) return [];
+  return client.fetch(
+    `*[_type == "print" && available == true] | order(order asc, name asc) { ${printFields} }`,
+    {},
+    { next: { revalidate: 60 } }
+  );
+}
+
+export async function getPrintBySlug(slug: string): Promise<Print | null> {
+  if (!client) return null;
+  return client.fetch(
+    `*[_type == "print" && slug.current == $slug][0] { ${printFields} }`,
+    { slug },
+    { next: { revalidate: 60 } }
+  );
+}
+
+export async function getAllPrintSlugs(): Promise<{ slug: string; updatedAt: string }[]> {
+  if (!client) return [];
+  const results = await client.fetch<{ slug: { current: string }; _updatedAt: string }[]>(
+    `*[_type == "print" && available == true] { slug, _updatedAt }`
+  );
+  return results.map((r) => ({ slug: r.slug.current, updatedAt: r._updatedAt }));
+}
+
 // ─── Site Settings ────────────────────────────────────────────────────────────
 
 export type SiteSettings = {
@@ -138,6 +181,7 @@ export type SiteSettings = {
   // Navigation
   navCoffeeLabel: string;
   navGearLabel: string;
+  navPrintsLabel: string;
   // Homepage
   heroEyebrow?: string;
   heroHeadline?: string;
@@ -157,6 +201,10 @@ export type SiteSettings = {
   gearPageHeading?: string;
   gearPageAbout?: string;
   gearPageDescription?: string;
+  // Prints page
+  printsPageEyebrow?: string;
+  printsPageHeading?: string;
+  printsPageDescription?: string;
   // Footer
   footerTagline?: string;
 };
@@ -167,6 +215,7 @@ const FALLBACK_SETTINGS: SiteSettings = {
   instagramHandle: "flatwhiteframes",
   navCoffeeLabel: "Coffee Log",
   navGearLabel: "Gear",
+  navPrintsLabel: "Prints",
   heroEyebrow: "Coffee & Cameras",
   heroHeadline: "A log of great coffee and honest gear reviews.",
   heroAbout: "I'm Taylor — I spend too much time in coffee shops and too much money on camera gear. This is where I write it all down.",
@@ -183,6 +232,9 @@ const FALLBACK_SETTINGS: SiteSettings = {
   gearPageHeading: "Gear Index",
   gearPageAbout: "",
   gearPageDescription: "My full camera kit — bodies, lenses, and accessories — each with an honest review.",
+  printsPageEyebrow: "The Shop",
+  printsPageHeading: "Print Shop",
+  printsPageDescription: "Fine art prints of my favourite frames — available in A4, A3, and A2.",
   footerTagline: "Flat White Frames — coffee & cameras",
 };
 

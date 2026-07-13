@@ -12,6 +12,7 @@ export const siteSettingsSchema = defineType({
     { name: "homepage", title: "Homepage" },
     { name: "coffeePage", title: "Coffee Page" },
     { name: "gearPage", title: "Gear Page" },
+    { name: "printsPage", title: "Prints Page" },
     { name: "footer", title: "Footer" },
   ],
   fields: [
@@ -54,6 +55,13 @@ export const siteSettingsSchema = defineType({
       type: "string",
       group: "navigation",
       initialValue: "Gear",
+    }),
+    defineField({
+      name: "navPrintsLabel",
+      title: "Prints Nav Label",
+      type: "string",
+      group: "navigation",
+      initialValue: "Prints",
     }),
 
     // ── Homepage ───────────────────────────────────────────────────────────
@@ -177,6 +185,30 @@ export const siteSettingsSchema = defineType({
       rows: 2,
       group: "gearPage",
       description: "Used by search engines and social share cards — not shown on the page.",
+    }),
+
+    // ── Prints Page ───────────────────────────────────────────────────────────
+    defineField({
+      name: "printsPageEyebrow",
+      title: "Eyebrow",
+      type: "string",
+      group: "printsPage",
+      initialValue: "The Shop",
+    }),
+    defineField({
+      name: "printsPageHeading",
+      title: "Page Heading",
+      type: "string",
+      group: "printsPage",
+      initialValue: "Print Shop",
+    }),
+    defineField({
+      name: "printsPageDescription",
+      title: "Page Description / Meta Description",
+      type: "text",
+      rows: 2,
+      group: "printsPage",
+      description: "Shown below the heading and used by search engines.",
     }),
 
     // ── Footer ─────────────────────────────────────────────────────────────
