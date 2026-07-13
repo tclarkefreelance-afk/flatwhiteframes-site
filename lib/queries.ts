@@ -8,11 +8,12 @@ type PtBlock = { _type: string; children?: { text?: string }[] };
 /** Extracts a plain string from a portable text value.
  *  Handles legacy plain-text strings (existing Sanity documents) and modern
  *  block arrays transparently so old content never causes a runtime error. */
-export function blocksToPlainText(value: unknown[] | string | null | undefined): string {
+export function blocksToPlainText(value: unknown): string {
   if (!value) return "";
   if (typeof value === "string") return value;
+  if (!Array.isArray(value)) return "";
   return (value as PtBlock[])
-    .filter((b) => b._type === "block")
+    .filter((b) => b && b._type === "block")
     .map((b) => b.children?.map((c) => c.text ?? "").join("") ?? "")
     .join(" ")
     .trim();

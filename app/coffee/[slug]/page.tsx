@@ -21,9 +21,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const cafe = await getCafeBySlug(slug);
   if (!cafe) return {};
+
+  const notes = cafe.shortNotes;
+  const description =
+    typeof notes === "string"
+      ? notes
+      : Array.isArray(notes)
+      ? blocksToPlainText(notes)
+      : undefined;
+
   return {
     title: cafe.name,
-    description: blocksToPlainText(cafe.shortNotes),
+    description,
     openGraph: cafe.coverImage
       ? { images: [{ url: urlFor(cafe.coverImage).width(1200).height(630).url() }] }
       : undefined,
