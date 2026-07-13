@@ -22,6 +22,7 @@ export type Cafe = {
   visitDate?: string;
   rating: number;
   shortNotes: string;
+  seoDescription?: string;
   body?: unknown[];
   coverImage?: SanityImage;
   photos?: SanityImage[];
@@ -56,6 +57,7 @@ const cafeFields = `
 
 const cafeFullFields = `
   ${cafeFields},
+  seoDescription,
   body[] { ..., asset-> },
   photos[] { asset, alt, caption, hotspot },
   website, instagram

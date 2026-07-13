@@ -60,10 +60,17 @@ export const cafeSchema = defineType({
     defineField({
       name: "shortNotes",
       title: "Short Notes",
-      description: "One or two sentences for the card preview.",
+      description: "Shown on cards and on the café page. Press Enter twice to start a new paragraph.",
       type: "text",
-      rows: 3,
-      validation: (Rule) => Rule.required().max(200),
+      rows: 4,
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "seoDescription",
+      title: "SEO Description",
+      description: "Used as the meta description in search results and social shares. Max 160 characters. If left blank, the Short Notes will be used instead.",
+      type: "string",
+      validation: (Rule) => Rule.max(160),
     }),
     defineField({
       name: "body",

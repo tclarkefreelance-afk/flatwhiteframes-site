@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   return {
     title: cafe.name,
-    description: cafe.shortNotes,
+    description: cafe.seoDescription ?? cafe.shortNotes,
     openGraph: cafe.coverImage
       ? { images: [{ url: urlFor(cafe.coverImage).width(1200).height(630).url() }] }
       : undefined,
@@ -100,7 +100,11 @@ export default async function CafeDetailPage({ params }: Props) {
           </div>
         )}
 
-        <p className="mt-5 text-stone text-lg leading-relaxed max-w-2xl">{cafe.shortNotes}</p>
+        <div className="mt-5 max-w-2xl space-y-3">
+          {cafe.shortNotes.split(/\n\n+/).map((para, i) => (
+            <p key={i} className="text-stone text-lg leading-relaxed">{para}</p>
+          ))}
+        </div>
 
         <div className="flex flex-wrap gap-4 mt-5">
           {cafe.website && (
