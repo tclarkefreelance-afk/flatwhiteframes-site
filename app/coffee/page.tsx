@@ -14,7 +14,8 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function CoffeePage() {
-  const [cafes, s] = await Promise.all([getAllCafes(), getSiteSettings()]);
+  const [rawCafes, s] = await Promise.all([getAllCafes(), getSiteSettings()]);
+  const cafes = Array.isArray(rawCafes) ? rawCafes : [];
 
   // Only pass the fields the map actually needs — keeps the client bundle small
   const mapPins = cafes
