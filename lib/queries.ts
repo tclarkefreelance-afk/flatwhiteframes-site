@@ -5,10 +5,13 @@ import { client } from "./sanity.client";
 
 type PtBlock = { _type: string; children?: { text?: string }[] };
 
-/** Extracts a plain string from a portable text block array — used for card
- *  previews and SEO metadata where raw HTML isn't appropriate. */
-export function blocksToPlainText(blocks: unknown[]): string {
-  return (blocks as PtBlock[])
+/** Extracts a plain string from a portable text value.
+ *  Handles legacy plain-text strings (existing Sanity documents) and modern
+ *  block arrays transparently so old content never causes a runtime error. */
+export function blocksToPlainText(value: unknown[] | string | null | undefined): string {
+  if (!value) return "";
+  if (typeof value === "string") return value;
+  return (value as PtBlock[])
     .filter((b) => b._type === "block")
     .map((b) => b.children?.map((c) => c.text ?? "").join("") ?? "")
     .join(" ")
@@ -35,7 +38,7 @@ export type Cafe = {
   longitude?: number;
   visitDate?: string;
   rating: number;
-  shortNotes: unknown[];
+  shortNotes: unknown[] | string;
   body?: unknown[];
   coverImage?: SanityImage;
   photos?: SanityImage[];
@@ -50,7 +53,7 @@ export type Gear = {
   name: string;
   slug: { current: string };
   category: "camera-gear" | "tech" | "accessories" | "misc";
-  shortReview: unknown[];
+  shortReview: unknown[] | string;
   body?: unknown[];
   samplePhoto?: SanityImage;
   rating?: number;

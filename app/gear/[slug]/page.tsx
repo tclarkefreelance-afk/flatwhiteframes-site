@@ -93,7 +93,11 @@ export default async function GearDetailPage({ params }: Props) {
           )}
 
           <div>
-            <PortableText value={gear.shortReview as Parameters<typeof PortableText>[0]["value"]} components={ledeComponents} />
+            {typeof gear.shortReview === "string" ? (
+              <p className="text-stone text-lg leading-relaxed">{gear.shortReview}</p>
+            ) : (
+              <PortableText value={gear.shortReview as Parameters<typeof PortableText>[0]["value"]} components={ledeComponents} />
+            )}
           </div>
 
           {gear.stillOwn === false && (

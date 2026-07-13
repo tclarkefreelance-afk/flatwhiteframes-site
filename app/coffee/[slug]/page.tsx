@@ -100,7 +100,11 @@ export default async function CafeDetailPage({ params }: Props) {
         )}
 
         <div className="mt-5 max-w-2xl">
-          <PortableText value={cafe.shortNotes as Parameters<typeof PortableText>[0]["value"]} components={ledeComponents} />
+          {typeof cafe.shortNotes === "string" ? (
+            <p className="text-stone text-lg leading-relaxed">{cafe.shortNotes}</p>
+          ) : (
+            <PortableText value={cafe.shortNotes as Parameters<typeof PortableText>[0]["value"]} components={ledeComponents} />
+          )}
         </div>
 
         <div className="flex flex-wrap gap-4 mt-5">
