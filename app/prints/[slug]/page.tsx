@@ -82,7 +82,11 @@ export default async function PrintPage({
           </h1>
 
           {print.description && (
-            <p className="text-stone leading-relaxed mb-8">{print.description}</p>
+            <div className="space-y-3 mb-8">
+              {print.description.split(/\n\n+/).map((para, i) => (
+                <p key={i} className="text-stone leading-relaxed">{para}</p>
+              ))}
+            </div>
           )}
 
           {/* Print details */}

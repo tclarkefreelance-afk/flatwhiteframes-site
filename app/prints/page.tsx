@@ -29,9 +29,11 @@ export default async function PrintsPage() {
           {s.printsPageHeading}
         </h1>
         {s.printsPageDescription && (
-          <p className="mt-4 text-stone max-w-lg leading-relaxed">
-            {s.printsPageDescription}
-          </p>
+          <div className="mt-4 max-w-lg space-y-3">
+            {s.printsPageDescription.split(/\n\n+/).map((para, i) => (
+              <p key={i} className="text-stone leading-relaxed">{para}</p>
+            ))}
+          </div>
         )}
         <div className="mt-5 inline-flex items-center gap-2 text-xs text-roast bg-roast-muted px-3 py-1.5">
           <span className="w-1.5 h-1.5 rounded-full bg-roast inline-block" />
