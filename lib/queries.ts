@@ -1,6 +1,20 @@
 import { cache } from "react";
 import { client } from "./sanity.client";
 
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
+type PtBlock = { _type: string; children?: { text?: string }[] };
+
+/** Extracts a plain string from a portable text block array — used for card
+ *  previews and SEO metadata where raw HTML isn't appropriate. */
+export function blocksToPlainText(blocks: unknown[]): string {
+  return (blocks as PtBlock[])
+    .filter((b) => b._type === "block")
+    .map((b) => b.children?.map((c) => c.text ?? "").join("") ?? "")
+    .join(" ")
+    .trim();
+}
+
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 export type SanityImage = {
@@ -21,7 +35,7 @@ export type Cafe = {
   longitude?: number;
   visitDate?: string;
   rating: number;
-  shortNotes: string;
+  shortNotes: unknown[];
   body?: unknown[];
   coverImage?: SanityImage;
   photos?: SanityImage[];
@@ -36,7 +50,7 @@ export type Gear = {
   name: string;
   slug: { current: string };
   category: "camera-gear" | "tech" | "accessories" | "misc";
-  shortReview: string;
+  shortReview: unknown[];
   body?: unknown[];
   samplePhoto?: SanityImage;
   rating?: number;

@@ -60,10 +60,24 @@ export const cafeSchema = defineType({
     defineField({
       name: "shortNotes",
       title: "Short Notes",
-      description: "One or two sentences for the card preview.",
-      type: "text",
-      rows: 3,
-      validation: (Rule) => Rule.required().max(200),
+      description: "Brief preview shown on cards and above the full review. Supports bold, italic, and underline.",
+      type: "array",
+      of: [
+        {
+          type: "block",
+          styles: [{ title: "Normal", value: "normal" }],
+          lists: [],
+          marks: {
+            decorators: [
+              { title: "Bold", value: "strong" },
+              { title: "Italic", value: "em" },
+              { title: "Underline", value: "underline" },
+            ],
+            annotations: [],
+          },
+        },
+      ],
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: "body",

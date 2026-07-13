@@ -2,6 +2,25 @@ import Image from "next/image";
 import { urlFor } from "@/lib/sanity.image";
 import { PortableTextComponents } from "@portabletext/react";
 
+/** Used for short-description fields (shortNotes / shortReview) on detail pages.
+ *  Renders plain paragraphs in the lede style — no headings or block images. */
+export const ledeComponents: PortableTextComponents = {
+  block: {
+    normal: ({ children }) => (
+      <p className="text-stone text-lg leading-relaxed mt-3 first:mt-0">{children}</p>
+    ),
+  },
+  marks: {
+    strong: ({ children }) => (
+      <strong className="font-semibold text-espresso-light">{children}</strong>
+    ),
+    em: ({ children }) => <em>{children}</em>,
+    underline: ({ children }) => (
+      <span style={{ textDecoration: "underline" }}>{children}</span>
+    ),
+  },
+};
+
 export const portableTextComponents: PortableTextComponents = {
   types: {
     image: ({ value }) => {
