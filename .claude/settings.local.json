@@ -6,7 +6,12 @@
       "Bash(node -e \"console.log\\(require\\('./node_modules/next/package.json'\\).version\\)\")",
       "Bash(npx tsc *)",
       "Bash(npm run *)",
-      "Bash(node -e ' *)"
+      "Bash(node -e ' *)",
+      "Bash(git -C /Users/taylorclarke/Documents/flatwhiteframes-site log --oneline -8)",
+      "Bash(git -C /Users/taylorclarke/Documents/flatwhiteframes-site diff app/coffee/\\\\[slug\\\\]/page.tsx lib/queries.ts)",
+      "Bash(git -C /Users/taylorclarke/Documents/flatwhiteframes-site add app/coffee/\\\\[slug\\\\]/page.tsx lib/queries.ts)",
+      "Bash(git -C /Users/taylorclarke/Documents/flatwhiteframes-site commit -m ' *)",
+      "Bash(git -C /Users/taylorclarke/Documents/flatwhiteframes-site push origin main)"
     ]
   }
 }
