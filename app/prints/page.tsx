@@ -30,7 +30,7 @@ export default async function PrintsPage() {
         </h1>
         {s.printsPageDescription && (
           <div className="mt-4 max-w-lg space-y-3">
-            {s.printsPageDescription.split(/\n\n+/).map((para, i) => (
+            {s.printsPageDescription.split(/\n/).map((para, i) => (
               <p key={i} className="text-stone leading-relaxed">{para}</p>
             ))}
           </div>
