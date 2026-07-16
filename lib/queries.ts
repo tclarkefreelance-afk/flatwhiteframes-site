@@ -207,6 +207,8 @@ export type SiteSettings = {
   printsPageEyebrow?: string;
   printsPageHeading?: string;
   printsPageDescription?: string;
+  printsPageHeroText?: string;
+  printDetailsText?: string;
   // Footer
   footerTagline?: string;
 };
@@ -237,6 +239,8 @@ const FALLBACK_SETTINGS: SiteSettings = {
   printsPageEyebrow: "The Shop",
   printsPageHeading: "Print Shop",
   printsPageDescription: "Fine art prints of my favourite frames — available in A4, A3, and A2.",
+  printsPageHeroText: "",
+  printDetailsText: "Giclée print on archival matte paper\nSigned and numbered edition\nUnframed — white border included",
   footerTagline: "Flat White Frames — coffee & cameras",
 };
 

@@ -35,6 +35,13 @@ export default async function PrintsPage() {
             ))}
           </div>
         )}
+        {s.printsPageHeroText && (
+          <div className="mt-4 max-w-lg space-y-3">
+            {s.printsPageHeroText.split('\n').filter(p => p.trim()).map((para, i) => (
+              <p key={i} className="text-stone leading-relaxed">{para}</p>
+            ))}
+          </div>
+        )}
         <div className="mt-5 inline-flex items-center gap-2 text-xs text-roast bg-roast-muted px-3 py-1.5">
           <span className="w-1.5 h-1.5 rounded-full bg-roast inline-block" />
           Coming soon — join the waitlist on any print

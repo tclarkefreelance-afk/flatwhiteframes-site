@@ -210,6 +210,23 @@ export const siteSettingsSchema = defineType({
       group: "printsPage",
       description: "Shown below the heading and used by search engines.",
     }),
+    defineField({
+      name: "printsPageHeroText",
+      title: "Prints Page Hero Text",
+      type: "text",
+      rows: 4,
+      group: "printsPage",
+      description: "Intro text shown below the page description at the top of the Prints page. Each new line becomes a new paragraph.",
+    }),
+    defineField({
+      name: "printDetailsText",
+      title: "Print Details Text",
+      type: "text",
+      rows: 4,
+      group: "printsPage",
+      description: "Shown on each individual print page below the description (e.g. paper type, framing, shipping). Each new line becomes a separate line.",
+      initialValue: "Giclée print on archival matte paper\nSigned and numbered edition\nUnframed — white border included",
+    }),
 
     // ── Footer ─────────────────────────────────────────────────────────────
     defineField({

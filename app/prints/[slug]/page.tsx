@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getAllPrintSlugs, getPrintBySlug } from "@/lib/queries";
+import { getAllPrintSlugs, getPrintBySlug, getSiteSettings } from "@/lib/queries";
 import { urlFor } from "@/lib/sanity.image";
 import PrintSizeSelector from "@/components/PrintSizeSelector";
 
@@ -33,7 +33,7 @@ export default async function PrintPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const print = await getPrintBySlug(slug);
+  const [print, s] = await Promise.all([getPrintBySlug(slug), getSiteSettings()]);
   if (!print) notFound();
 
   const imgSrc = print.image?.asset
@@ -90,13 +90,15 @@ export default async function PrintPage({
           )}
 
           {/* Print details */}
-          <div className="border-t border-roast-muted pt-6 mb-8">
-            <ul className="text-sm text-stone space-y-1.5">
-              <li>Giclée print on archival matte paper</li>
-              <li>Signed and numbered edition</li>
-              <li>Unframed — white border included</li>
-            </ul>
-          </div>
+          {s.printDetailsText && (
+            <div className="border-t border-roast-muted pt-6 mb-8">
+              <ul className="text-sm text-stone space-y-1.5">
+                {s.printDetailsText.split('\n').filter(line => line.trim()).map((line, i) => (
+                  <li key={i}>{line}</li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           <PrintSizeSelector printName={print.name} />
         </div>
