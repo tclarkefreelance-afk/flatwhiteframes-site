@@ -121,24 +121,42 @@ export async function POST(req: NextRequest) {
     ],
   };
 
-  const prodigiRes = await fetch(`${prodigiUrl}/orders`, {
-    method: "POST",
-    headers: {
-      "X-API-Key": prodigiKey,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(prodigiOrder),
-  });
+  console.log("[prodigi] sending order payload:", JSON.stringify(prodigiOrder, null, 2));
 
-  if (!prodigiRes.ok) {
-    const detail = await prodigiRes.text();
-    console.error("[webhook] Prodigi order failed:", prodigiRes.status, detail);
-    // Return 200 so Stripe doesn't retry — log the failure for manual follow-up.
-    return NextResponse.json({ received: true, prodigiError: detail });
+  let prodigiRes: Response;
+  try {
+    prodigiRes = await fetch(`${prodigiUrl}/orders`, {
+      method: "POST",
+      headers: {
+        "X-API-Key": prodigiKey,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(prodigiOrder),
+    });
+  } catch (err) {
+    console.error("[prodigi] fetch threw — network or DNS error:", err);
+    return NextResponse.json({ received: true, error: "Prodigi fetch failed" });
   }
 
-  const prodigiData = await prodigiRes.json();
-  console.log("[webhook] Prodigi order created:", prodigiData?.order?.id ?? prodigiData);
+  const prodigiBody = await prodigiRes.text();
+  console.log("[prodigi] response status:", prodigiRes.status);
+  console.log("[prodigi] response body:", prodigiBody);
+
+  if (!prodigiRes.ok) {
+    console.error("[prodigi] order rejected — status", prodigiRes.status, "body:", prodigiBody);
+    // Return 200 so Stripe doesn't retry — log the failure for manual follow-up.
+    return NextResponse.json({ received: true, prodigiError: prodigiBody });
+  }
+
+  let prodigiData: unknown;
+  try {
+    prodigiData = JSON.parse(prodigiBody);
+  } catch {
+    console.error("[prodigi] response was not valid JSON:", prodigiBody);
+    return NextResponse.json({ received: true });
+  }
+
+  console.log("[prodigi] order created successfully:", JSON.stringify(prodigiData, null, 2));
 
   return NextResponse.json({ received: true });
 }
