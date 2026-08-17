@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
   }
 
   const sizeConfig = SIZE_CONFIG[size];
-  const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://flatwhiteframes.com").replace(/\/$/, "");
+  const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://flatwhiteframes.blog").replace(/\/$/, "");
   const stripe = new Stripe(stripeKey);
 
   const session = await stripe.checkout.sessions.create({
