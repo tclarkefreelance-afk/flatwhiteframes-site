@@ -9,34 +9,37 @@ const SIZES = [
 ] as const;
 
 type SizeId = (typeof SIZES)[number]["id"];
-type Stage = "idle" | "form" | "success";
 
-export default function PrintSizeSelector({ printName }: { printName: string }) {
+export default function PrintSizeSelector({
+  printName,
+  printSlug,
+}: {
+  printName: string;
+  printSlug: string;
+}) {
   const [selected, setSelected] = useState<SizeId>("a3");
-  const [stage, setStage] = useState<Stage>("idle");
-  const [email, setEmail] = useState("");
-  const [submitting, setSubmitting] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const selectedSize = SIZES.find((s) => s.id === selected)!;
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!email) return;
-    setSubmitting(true);
+  async function handleBuy() {
+    setLoading(true);
     setError("");
     try {
-      const res = await fetch("/api/waitlist", {
+      const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, print: printName, size: selected }),
+        body: JSON.stringify({ printSlug, size: selected }),
       });
-      if (!res.ok) throw new Error("Request failed");
-      setStage("success");
-    } catch {
-      setError("Something went wrong. Please try again.");
-    } finally {
-      setSubmitting(false);
+      const data = await res.json();
+      if (!res.ok || !data.url) {
+        throw new Error(data.error ?? "Failed to create checkout session");
+      }
+      window.location.href = data.url;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+      setLoading(false);
     }
   }
 
@@ -66,9 +69,7 @@ export default function PrintSizeSelector({ printName }: { printName: string }) 
                   onChange={() => setSelected(size.id)}
                   className="accent-espresso"
                 />
-                <span className="font-sans font-medium text-espresso">
-                  {size.label}
-                </span>
+                <span className="font-sans font-medium text-espresso">{size.label}</span>
                 <span className="text-stone text-sm">{size.dimensions}</span>
               </div>
               <span className="font-serif text-espresso font-medium">{size.price}</span>
@@ -77,62 +78,21 @@ export default function PrintSizeSelector({ printName }: { printName: string }) 
         </div>
       </div>
 
-      {/* CTA / form area */}
-      {stage === "idle" && (
-        <button
-          onClick={() => setStage("form")}
-          className="w-full bg-espresso text-cream font-sans text-sm uppercase tracking-widest py-3 px-6 hover:bg-espresso-light transition-colors"
-        >
-          Buy this print — {selectedSize.price}
-        </button>
+      {error && (
+        <p className="text-sm text-red-600 mb-4">{error}</p>
       )}
 
-      {stage === "form" && (
-        <div className="border border-roast-muted p-5 bg-cream-dark">
-          <p className="font-serif text-lg text-espresso mb-1">Coming soon</p>
-          <p className="text-stone text-sm mb-4 leading-relaxed">
-            Prints aren&apos;t available to buy yet. Join the waitlist and we&apos;ll let
-            you know as soon as the shop opens.
-          </p>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-            <input
-              type="email"
-              required
-              placeholder="your@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full border border-roast-muted bg-cream px-4 py-2.5 text-sm text-espresso placeholder:text-stone-light focus:outline-none focus:border-espresso"
-            />
-            {error && <p className="text-sm text-red-600">{error}</p>}
-            <div className="flex gap-2">
-              <button
-                type="submit"
-                disabled={submitting}
-                className="flex-1 bg-espresso text-cream font-sans text-sm uppercase tracking-widest py-2.5 px-4 hover:bg-espresso-light transition-colors disabled:opacity-50"
-              >
-                {submitting ? "Joining…" : "Join the waitlist"}
-              </button>
-              <button
-                type="button"
-                onClick={() => setStage("idle")}
-                className="px-4 py-2.5 border border-roast-muted text-stone text-sm hover:border-espresso hover:text-espresso transition-colors"
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
+      <button
+        onClick={handleBuy}
+        disabled={loading}
+        className="w-full bg-espresso text-cream font-sans text-sm uppercase tracking-widest py-3 px-6 hover:bg-espresso-light transition-colors disabled:opacity-50"
+      >
+        {loading ? "Redirecting to checkout…" : `Buy this print — ${selectedSize.price}`}
+      </button>
 
-      {stage === "success" && (
-        <div className="border border-roast-muted p-5 bg-cream-dark text-center">
-          <p className="font-serif text-lg text-espresso mb-1">You&apos;re on the list</p>
-          <p className="text-stone text-sm leading-relaxed">
-            We&apos;ll email you at <span className="text-espresso">{email}</span> when{" "}
-            {printName} ({selectedSize.label}, {selectedSize.price}) is available to order.
-          </p>
-        </div>
-      )}
+      <p className="text-xs text-stone-light text-center mt-3">
+        Secure checkout via Stripe
+      </p>
     </div>
   );
 }

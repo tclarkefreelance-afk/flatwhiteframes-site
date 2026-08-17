@@ -36,6 +36,12 @@ export const printSchema = defineType({
       description: "A short description shown on the print page.",
     }),
     defineField({
+      name: "printFileUrl",
+      title: "Print File URL",
+      type: "url",
+      description: "Google Drive direct download link for the high-res file sent to Prodigi. Use the format: https://drive.google.com/uc?export=download&id=FILE_ID",
+    }),
+    defineField({
       name: "available",
       title: "Show in shop",
       type: "boolean",

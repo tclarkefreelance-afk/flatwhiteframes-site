@@ -139,12 +139,13 @@ export type Print = {
   slug: { current: string };
   image?: SanityImage;
   description?: string;
+  printFileUrl?: string;
   available?: boolean;
   order?: number;
 };
 
 const printFields = `
-  _id, name, slug, description, available, order,
+  _id, name, slug, description, available, order, printFileUrl,
   image { asset, alt, hotspot }
 `;
 

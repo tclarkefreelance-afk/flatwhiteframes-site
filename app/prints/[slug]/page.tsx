@@ -100,7 +100,7 @@ export default async function PrintPage({
             </div>
           )}
 
-          <PrintSizeSelector printName={print.name} />
+          <PrintSizeSelector printName={print.name} printSlug={print.slug.current} />
         </div>
       </div>
     </div>
