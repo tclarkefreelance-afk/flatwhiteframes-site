@@ -1,22 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
-// stripe@22 type definitions omit shipping_details from Checkout.Session.
-// Define only the fields we read from the retrieved session.
+// stripe@22 (API version 2026-07-29.dahlia) moved shipping_details into
+// collected_information.shipping_details — it no longer exists at the top level.
+interface ShippingAddress {
+  line1?: string | null;
+  line2?: string | null;
+  city?: string | null;
+  state?: string | null;
+  postal_code?: string | null;
+  country?: string | null;
+}
+
+interface ShippingDetails {
+  name?: string | null;
+  address?: ShippingAddress | null;
+}
+
 interface CheckoutSession {
   id: string;
   metadata: Record<string, string> | null;
   customer_details: { email?: string | null } | null;
-  shipping_details: {
-    name?: string | null;
-    address?: {
-      line1?: string | null;
-      line2?: string | null;
-      city?: string | null;
-      state?: string | null;
-      postal_code?: string | null;
-      country?: string | null;
-    } | null;
+  collected_information: {
+    shipping_details?: ShippingDetails | null;
   } | null;
 }
 
@@ -58,8 +64,8 @@ export async function POST(req: NextRequest) {
   const sessionId = (event.data.object as Stripe.Checkout.Session).id;
   const session = await stripe.checkout.sessions.retrieve(sessionId) as unknown as CheckoutSession;
 
-  const { printSlug, printName, size, sku, printFileUrl } = session.metadata ?? {};
-  const shipping = session.shipping_details;
+  const { printSlug, size, sku, printFileUrl } = session.metadata ?? {};
+  const shipping = session.collected_information?.shipping_details;
   const customerEmail = session.customer_details?.email;
 
   console.log("[webhook] session fields", {
