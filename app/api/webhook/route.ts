@@ -1,6 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
+// stripe@22 type definitions omit shipping_details from Checkout.Session.
+// Define only the fields we read from the retrieved session.
+interface CheckoutSession {
+  id: string;
+  metadata: Record<string, string> | null;
+  customer_details: { email?: string | null } | null;
+  shipping_details: {
+    name?: string | null;
+    address?: {
+      line1?: string | null;
+      line2?: string | null;
+      city?: string | null;
+      state?: string | null;
+      postal_code?: string | null;
+      country?: string | null;
+    } | null;
+  } | null;
+}
+
 // Raw body is required for Stripe signature verification — do not parse as JSON.
 export const dynamic = "force-dynamic";
 
@@ -17,12 +36,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Missing stripe-signature header" }, { status: 400 });
   }
 
-  const body = await req.text();
+  // Use a Buffer rather than req.text() — some Vercel edge configurations
+  // re-encode the stream before the handler runs, which breaks the HMAC.
+  const rawBody = Buffer.from(await req.arrayBuffer());
   const stripe = new Stripe(stripeKey);
 
   let event: Stripe.Event;
   try {
-    event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
+    event = stripe.webhooks.constructEvent(rawBody, sig, webhookSecret);
   } catch (err) {
     console.error("[webhook] Signature verification failed:", err);
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
@@ -32,20 +53,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ received: true });
   }
 
-  // Retrieve the full session so all fields (including shipping_details) are present.
-  const session = await stripe.checkout.sessions.retrieve(
-    (event.data.object as Stripe.Checkout.Session).id,
-    { expand: ["shipping_details"] }
-  );
+  // The webhook payload already contains the full session — no retrieve needed.
+  const session = event.data.object as unknown as CheckoutSession;
 
   const { printSlug, printName, size, sku, printFileUrl } = session.metadata ?? {};
-  // shipping_details is populated when shipping_address_collection is set on the session.
-  const shipping = (session as unknown as { shipping_details?: { name?: string; address?: { line1?: string; line2?: string; city?: string; state?: string; postal_code?: string; country?: string } } }).shipping_details;
+  const shipping = session.shipping_details;
   const customerEmail = session.customer_details?.email;
 
   if (!sku || !printFileUrl || !shipping?.address) {
+    // Return 200 so Stripe doesn't retry — this event can't be fulfilled without these fields.
     console.error("[webhook] Missing metadata or shipping address", { printSlug, sku, shipping });
-    return NextResponse.json({ error: "Incomplete order data" }, { status: 400 });
+    return NextResponse.json({ received: true, error: "Incomplete order data" });
   }
 
   const prodigiUrl = process.env.PRODIGI_API_URL?.replace(/\/$/, "");
@@ -63,12 +81,12 @@ export async function POST(req: NextRequest) {
       name: shipping.name ?? customerEmail ?? "Customer",
       email: customerEmail ?? undefined,
       address: {
-        line1: addr.line1 ?? "",
-        line2: addr.line2 ?? undefined,
-        postalOrZipCode: addr.postal_code ?? "",
-        countryCode: addr.country ?? "",
-        townOrCity: addr.city ?? "",
-        stateOrCounty: addr.state ?? undefined,
+        line1: addr?.line1 ?? "",
+        line2: addr?.line2 ?? undefined,
+        postalOrZipCode: addr?.postal_code ?? "",
+        countryCode: addr?.country ?? "",
+        townOrCity: addr?.city ?? "",
+        stateOrCounty: addr?.state ?? undefined,
       },
     },
     items: [
