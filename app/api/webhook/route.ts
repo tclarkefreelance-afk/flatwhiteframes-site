@@ -53,16 +53,32 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ received: true });
   }
 
-  // The webhook payload already contains the full session — no retrieve needed.
-  const session = event.data.object as unknown as CheckoutSession;
+  // Retrieve the full session from the API — the webhook payload is a compact
+  // snapshot and may not include shipping_details or all metadata fields.
+  const sessionId = (event.data.object as Stripe.Checkout.Session).id;
+  const session = await stripe.checkout.sessions.retrieve(sessionId) as unknown as CheckoutSession;
 
   const { printSlug, printName, size, sku, printFileUrl } = session.metadata ?? {};
   const shipping = session.shipping_details;
   const customerEmail = session.customer_details?.email;
 
+  console.log("[webhook] session fields", {
+    sessionId: session.id,
+    hasMetadata: !!session.metadata,
+    sku,
+    printSlug,
+    hasShipping: !!shipping,
+    hasShippingAddress: !!shipping?.address,
+  });
+
   if (!sku || !printFileUrl || !shipping?.address) {
     // Return 200 so Stripe doesn't retry — this event can't be fulfilled without these fields.
-    console.error("[webhook] Missing metadata or shipping address", { printSlug, sku, shipping });
+    console.error("[webhook] Missing metadata or shipping address", {
+      printSlug,
+      sku,
+      printFileUrl: !!printFileUrl,
+      shipping,
+    });
     return NextResponse.json({ received: true, error: "Incomplete order data" });
   }
 
