@@ -127,6 +127,7 @@ export async function POST(req: NextRequest) {
     ],
   };
 
+  console.log("[prodigi] key prefix:", process.env.PRODIGI_API_KEY?.substring(0, 8));
   console.log("[prodigi] sending order payload:", JSON.stringify(prodigiOrder, null, 2));
 
   let prodigiRes: Response;
