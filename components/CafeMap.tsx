@@ -12,11 +12,9 @@ import type { Cafe } from "@/lib/queries";
 type CafePin = Pick<Cafe, "_id" | "name" | "slug" | "city" | "rating" | "latitude" | "longitude">;
 
 // ─── Tile layer ───────────────────────────────────────────────────────────────
-// CartoDB Voyager: clean, minimal, editorial — no API key needed.
-const TILE_URL =
-  "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png";
+const TILE_URL = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
 const TILE_ATTR =
-  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>';
+  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 
 // ─── Custom SVG pin ───────────────────────────────────────────────────────────
 function makePinIcon() {
