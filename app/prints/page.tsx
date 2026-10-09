@@ -42,10 +42,6 @@ export default async function PrintsPage() {
             ))}
           </div>
         )}
-        <div className="mt-5 inline-flex items-center gap-2 text-xs text-roast bg-roast-muted px-3 py-1.5">
-          <span className="w-1.5 h-1.5 rounded-full bg-roast inline-block" />
-          Coming soon — join the waitlist on any print
-        </div>
       </header>
 
       {prints.length === 0 ? (
